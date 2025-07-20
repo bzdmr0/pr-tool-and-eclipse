@@ -73,7 +73,7 @@ def bulk_commit_changes(auto_push=True):
 def create_pull_request():
     try:
         # Get repository details from user
-        repo_name = "bzdmr0/GitHub-PR-Tool"
+        repo_name = "bzdmr0/pr-tool-and-eclipse"
         
         # Get the repository
         repo = g.get_repo(repo_name)
