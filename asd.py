@@ -36,9 +36,10 @@ def bulk_commit_changes():
         
         if not result.stdout.strip():
             print("No changes to commit")
-        else:
-            print("Modified files:")
-            print(result.stdout)
+            return False
+        
+        print("Modified files:")
+        print(result.stdout)
         
         commit_message = input("Enter commit message: ").strip()
         if not commit_message:
@@ -50,17 +51,7 @@ def bulk_commit_changes():
         # Create commit
         subprocess.run(['git', 'commit', '-m', commit_message], check=True)
         
-        
-        print(f"Bulk commit created: {commit_message}")
-        
-        try:
-            current_branch = get_current_git_branch()
-            subprocess.run(['git', 'pull', 'origin', current_branch], check=True)
-            subprocess.run(['git', 'push', 'origin', current_branch], check=True)
-            print("Successfully pushed to GitHub!")
-        except subprocess.CalledProcessError as push_error:
-            print(f"Commit created locally but failed to push: {push_error}")
-            print("Run 'git push' manually to sync with GitHub")
+        print(f"Commit created: {commit_message}")
         
         return True
     except subprocess.CalledProcessError as e:
@@ -68,6 +59,17 @@ def bulk_commit_changes():
         return False
 
 def create_pull_request():
+    # Push changes to GitHub
+    try:
+        current_branch = get_current_git_branch()
+        subprocess.run(['git', 'pull', 'origin', current_branch], check=True)
+        subprocess.run(['git', 'push', 'origin', current_branch], check=True)
+        print("Successfully pushed to GitHub!")
+    except subprocess.CalledProcessError as push_error:
+        print(f"Commit created locally but failed to push: {push_error}")
+        print("Run 'git push' manually to sync with GitHub")
+
+    # Create a pull request on GitHub
     try:
         # Get repository details from user
         repo_name = "bzdmr0/pr-tool-and-eclipse"
