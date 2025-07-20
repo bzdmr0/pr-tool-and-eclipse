@@ -50,12 +50,14 @@ def bulk_commit_changes(auto_push=True):
         # Create commit
         subprocess.run(['git', 'commit', '-m', commit_message], check=True)
         
+        
         print(f"Bulk commit created: {commit_message}")
         
         # Auto-push to GitHub if enabled
         if auto_push:
             try:
                 current_branch = get_current_git_branch()
+                subprocess.run(['git', 'pull', 'origin', current_branch], check=True)
                 subprocess.run(['git', 'push', 'origin', current_branch], check=True)
                 print("Successfully pushed to GitHub!")
             except subprocess.CalledProcessError as push_error:
