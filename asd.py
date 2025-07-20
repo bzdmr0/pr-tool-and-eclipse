@@ -170,6 +170,8 @@ if __name__ == "__main__":
     bulk_commit_changes(auto_push)
 
     create_pull_request()
+    
+    compile_by_eclipse()
 
 
 
