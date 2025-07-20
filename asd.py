@@ -27,7 +27,7 @@ def get_current_git_branch():
     except subprocess.CalledProcessError:
         return None
 
-def bulk_commit_changes(auto_push=True):
+def bulk_commit_changes():
     """Create a commit with multiple file changes"""
     try:
         # Get all modified files
@@ -36,10 +36,9 @@ def bulk_commit_changes(auto_push=True):
         
         if not result.stdout.strip():
             print("No changes to commit")
-            return False
-        
-        print("Modified files:")
-        print(result.stdout)
+        else:
+            print("Modified files:")
+            print(result.stdout)
         
         commit_message = input("Enter commit message: ").strip()
         if not commit_message:
@@ -54,16 +53,14 @@ def bulk_commit_changes(auto_push=True):
         
         print(f"Bulk commit created: {commit_message}")
         
-        # Auto-push to GitHub if enabled
-        if auto_push:
-            try:
-                current_branch = get_current_git_branch()
-                subprocess.run(['git', 'pull', 'origin', current_branch], check=True)
-                subprocess.run(['git', 'push', 'origin', current_branch], check=True)
-                print("Successfully pushed to GitHub!")
-            except subprocess.CalledProcessError as push_error:
-                print(f"Commit created locally but failed to push: {push_error}")
-                print("Run 'git push' manually to sync with GitHub")
+        try:
+            current_branch = get_current_git_branch()
+            subprocess.run(['git', 'pull', 'origin', current_branch], check=True)
+            subprocess.run(['git', 'push', 'origin', current_branch], check=True)
+            print("Successfully pushed to GitHub!")
+        except subprocess.CalledProcessError as push_error:
+            print(f"Commit created locally but failed to push: {push_error}")
+            print("Run 'git push' manually to sync with GitHub")
         
         return True
     except subprocess.CalledProcessError as e:
@@ -165,9 +162,7 @@ if __name__ == "__main__":
     print("GitHub PR & Commit Manager")
     print("=" * 40)
 
-    push_choice = input("Auto-push to GitHub? (y/n, default: y): ").strip().lower()
-    auto_push = push_choice != 'n'
-    bulk_commit_changes(auto_push)
+    bulk_commit_changes()
 
     create_pull_request()
     
