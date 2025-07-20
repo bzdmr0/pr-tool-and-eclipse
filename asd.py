@@ -165,9 +165,9 @@ if __name__ == "__main__":
     print("GitHub PR & Commit Manager")
     print("=" * 40)
 
-    push_choice = input("Auto-push to GitHub? (y/n, default: y): ").strip().lower()
-    auto_push = push_choice != 'n'
-    bulk_commit_changes(auto_push)
+    #push_choice = input("Auto-push to GitHub? (y/n, default: y): ").strip().lower()
+    #auto_push = push_choice != 'n'
+    #bulk_commit_changes(auto_push)
 
     create_pull_request()
     
