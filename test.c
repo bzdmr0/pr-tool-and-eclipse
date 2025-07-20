@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 int main() {
-    printf("Hello World!\n")
+    printf("Hello World!\n");
 
 #ifdef COMPILED_BY_PYTHON
     printf("This was compiled by Python script!\n");
@@ -12,4 +12,4 @@ int main() {
     return 0;
 }
 
-//asd1231234
+//asd1231234456
