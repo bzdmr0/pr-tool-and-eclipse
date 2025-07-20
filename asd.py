@@ -3,7 +3,8 @@ import os
 import subprocess
 from datetime import datetime
 import xml.etree.ElementTree as ET
-import json
+import smtplib
+from email.mime.text import MIMEText
 
 #asdasdaasdasd1111222233333
 
@@ -50,12 +51,14 @@ def bulk_commit_changes(auto_push=True):
         # Create commit
         subprocess.run(['git', 'commit', '-m', commit_message], check=True)
         
+        
         print(f"Bulk commit created: {commit_message}")
         
         # Auto-push to GitHub if enabled
         if auto_push:
             try:
                 current_branch = get_current_git_branch()
+                subprocess.run(['git', 'pull', 'origin', current_branch], check=True)
                 subprocess.run(['git', 'push', 'origin', current_branch], check=True)
                 print("Successfully pushed to GitHub!")
             except subprocess.CalledProcessError as push_error:
@@ -70,7 +73,7 @@ def bulk_commit_changes(auto_push=True):
 def create_pull_request():
     try:
         # Get repository details from user
-        repo_name = "bzdmr0/GitHub-PR-Tool"
+        repo_name = "bzdmr0/pr-tool-and-eclipse"
         
         # Get the repository
         repo = g.get_repo(repo_name)
@@ -116,7 +119,15 @@ def create_pull_request():
         return None
     
 def compile_by_eclipse():
-    """Compile a project using Eclipse CDT"""
+    # CONFIGURATION: Set these for your email
+    SMTP_SERVER = 'smtp.gmail.com'
+    SMTP_PORT = 587
+    EMAIL_FROM = 'bzdmrsaid@gmail.com'
+    EMAIL_TO = 'snapchaticin932@gmail.com'
+    EMAIL_SUBJECT = '[ALERT] Compilation Failed'
+    EMAIL_USER = 'bzdmrsaid@gmail.com'
+    EMAIL_PASS = 'iwgo cdbu hrmn yonh '  # Use an App Password if 2FA is enabled
+
     # Paths (edit as needed)
     source_file = "/home/bzdmr/eclipse-workspace/newProject1/test.c"  # Updated path
     output_dir = "/home/bzdmr/eclipse-workspace/newProject1/Debug"
@@ -129,11 +140,26 @@ def compile_by_eclipse():
     compile_cmd = ["gcc", source_file, "-o", output_binary]
 
     try:
-        # Run the compilation command
-        subprocess.check_call(compile_cmd)
-        print(f"Compiled '{source_file}' successfully to '{output_binary}'")
+        result = subprocess.run(compile_cmd, capture_output=True, text=True, check=True)
+        print("Compilation succeeded.")
     except subprocess.CalledProcessError as e:
-        print(f"Compilation failed: {e}")
+        print("Compilation failed!")
+        # Prepare the email
+        body = f"Compilation of {source_file} failed.\n\nError Output:\n{e.stderr}"
+        msg = MIMEText(body)
+        msg['Subject'] = EMAIL_SUBJECT
+        msg['From'] = EMAIL_FROM
+        msg['To'] = EMAIL_TO
+
+        # Send the email
+        try:
+            with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+                server.starttls()
+                server.login(EMAIL_USER, EMAIL_PASS)
+                server.sendmail(EMAIL_FROM, [EMAIL_TO], msg.as_string())
+            print("Error email sent.")
+        except Exception as mail_err:
+            print("Failed to send email:", mail_err)
 
 if __name__ == "__main__":
     print("GitHub PR & Commit Manager")
