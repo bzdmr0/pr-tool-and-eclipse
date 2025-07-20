@@ -18,3 +18,5 @@ try:
     print(f"Compiled '{source_file}' successfully to '{output_binary}'")
 except subprocess.CalledProcessError as e:
     print(f"Compilation failed: {e}")
+
+//asd
